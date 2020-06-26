@@ -1,15 +1,16 @@
-// Remember to prevent browser default behaviour
-$("#search-button").on("click", function (e) {
-    e.preventDefault();
-    displayCity();
-});
-
 const APIKey = "4b59a40f09c8d36a73b9057b6f2c3908";
+let cityName = $("#city-name").val();
+// Current weather data: api.openweathermap.org/data/2.5/weather?q={city name}&appid={your api key}
+let queryURL =
+    "https://api.openweathermap.org/data/2.5/weather?q=" +
+    cityName +
+    "&appid=" +
+    APIKey;
 
-function displayCity() {
-    const cityName = $("#city-name").val();
+function addCity() {
+    cityName = $("#city-name").val();
     // Current weather data: api.openweathermap.org/data/2.5/weather?q={city name}&appid={your api key}
-    const queryURL =
+    queryURL =
         "https://api.openweathermap.org/data/2.5/weather?q=" +
         cityName +
         "&appid=" +
@@ -21,12 +22,30 @@ function displayCity() {
     }).then(function (response) {
         console.log(response);
         // Display citys to the left panel
+
         $("#search-result-list").append(
             $("<button>")
                 .text(response.name)
                 .addClass("list-group-item list-group-item-action ml-2")
                 .attr("type", "button")
+                .attr("value", cityName)
         );
+    });
+}
+function displayCity() {
+    cityName = $("#city-name").val();
+    // Current weather data: api.openweathermap.org/data/2.5/weather?q={city name}&appid={your api key}
+    queryURL =
+        "https://api.openweathermap.org/data/2.5/weather?q=" +
+        cityName +
+        "&appid=" +
+        APIKey;
+
+    $.ajax({
+        url: queryURL,
+        method: "GET",
+    }).then(function (response) {
+        console.log(response);
 
         // Create essential variables for current date and weather icon
         const now = moment().format("MM/DD/YYYY");
@@ -102,14 +121,12 @@ function displayCity() {
             }
         });
 
+        // Clear current city's weather conditions before displaying new city's
+        $("#current-weather").text(" ");
         $("#current-weather").append(card);
 
         // Display 5-day forcast for the searched city
         // https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude={part}&appid={YOUR API KEY}
-        $("#future-weather").append(
-            $("<h3>").text("5-Day Forecast:").addClass("ml-3")
-        );
-
         const forcastURL =
             "https://api.openweathermap.org/data/2.5/onecall?lat=" +
             lat +
@@ -123,15 +140,19 @@ function displayCity() {
             method: "GET",
         }).then(function (response) {
             console.log(response);
+            const cardDeck = $("<div>").addClass("card-deck ml-3");
             let card;
             let cardBody;
             let cardIcon;
             let date;
             let temp;
-            for (let i = 0; i < 5; i++) {
-                card = $("<div>").addClass("card col-3");
+            for (let i = 1; i < 6; i++) {
+                card = $("<div>")
+                    .addClass("card col-2")
+                    .attr("style", "background-color:#2979ff");
                 cardBody = $("<div>").addClass("card-body");
                 card.append(cardBody);
+                cardDeck.append(card);
 
                 // creating date and icon variables
                 cardIcon = $(
@@ -159,8 +180,31 @@ function displayCity() {
                         .addClass("card-text")
                 );
 
-                $("#future-weather").append(card);
+                // Same effect as $("#current-weather").text(" ");
+                $("#future-weather").text(" ");
+                $("#future-weather").append(
+                    $("<h3>").text("5-Day Forecast:").addClass("col-12 ml-3")
+                );
+                $("#future-weather").append(cardDeck);
             }
         });
     });
 }
+
+// Remember to prevent browser default behaviour
+$("#search-button").on("click", function (e) {
+    e.preventDefault();
+    addCity();
+    displayCity();
+});
+
+$("#search-result-list").on("click", (event) => {
+    event.preventDefault();
+    // Listen to the clicked city
+    if (event.target !== event.currentTarget) {
+        const name = event.target.value;
+        console.log(name);
+        $("#city-name").val(name);
+        displayCity();
+    }
+});
