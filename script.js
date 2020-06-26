@@ -20,9 +20,7 @@ function addCity() {
         url: queryURL,
         method: "GET",
     }).then(function (response) {
-        console.log(response);
         // Display citys to the left panel
-
         $("#search-result-list").append(
             $("<button>")
                 .text(response.name)
@@ -45,8 +43,6 @@ function displayCity() {
         url: queryURL,
         method: "GET",
     }).then(function (response) {
-        console.log(response);
-
         // Create essential variables for current date and weather icon
         const now = moment().format("MM/DD/YYYY");
         const weatherIcon = $(
@@ -101,12 +97,8 @@ function displayCity() {
             url: UVIndexURL,
             method: "GET",
         }).then(function (response) {
-            console.log(response);
             const value = response.value;
-            console.log(value);
-
             const index = $("<button>").text(value);
-
             cardBody.append(
                 $("<p>").text("UV Index: ").addClass("card-text").append(index)
             );
@@ -121,9 +113,24 @@ function displayCity() {
             }
         });
 
-        // Clear current city's weather conditions before displaying new city's
-        $("#current-weather").text(" ");
-        $("#current-weather").append(card);
+        // Set localstorage
+        let currentWeather;
+        let current;
+        if (localStorage.getItem("currentWeather") === null) {
+            currentWeather = $("#current-weather").text(
+                JSON.parse(localStorage.getItem("currentWeather"))
+            );
+            $("#current-weather").text(currentWeather);
+        } else {
+            $("#current-weather").text(" ");
+            $("#current-weather").append(card);
+            current = $("#current-weather").text();
+            localStorage.setItem("currentWeather", current);
+        }
+
+        // // Clear current city's weather conditions before displaying new city's
+        // $("#current-weather").text(" ");
+        // $("#current-weather").append(card);
 
         // Display 5-day forcast for the searched city
         // https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude={part}&appid={YOUR API KEY}
@@ -139,7 +146,6 @@ function displayCity() {
             url: forcastURL,
             method: "GET",
         }).then(function (response) {
-            console.log(response);
             const cardDeck = $("<div>").addClass("card-deck ml-3");
             let card;
             let cardBody;
@@ -180,12 +186,38 @@ function displayCity() {
                         .addClass("card-text")
                 );
 
+                // set localstorage
+                let futureWeather;
+                let future;
+                if (localStorage.getItem("futureWeather") === null) {
+                    futureWeather = $("#future-weather").text(
+                        JSON.parse(localStorage.getItem("futureWeather"))
+                    );
+                    $("#future-weather").text(futureWeather);
+                    $("#future-weather").append(
+                        $("<h3>")
+                            .text("5-Day Forecast:")
+                            .addClass("col-12 ml-3")
+                    );
+                    $("#future-weather").append(cardDeck);
+                } else {
+                    $("#future-weather").text(" ");
+                    $("#future-weather").append(
+                        $("<h3>")
+                            .text("5-Day Forecast:")
+                            .addClass("col-12 ml-3")
+                    );
+                    $("#future-weather").append(cardDeck);
+                    future = $("#future-weather").text();
+                    localStorage.setItem("futureWeather", future);
+                }
+
                 // Same effect as $("#current-weather").text(" ");
-                $("#future-weather").text(" ");
-                $("#future-weather").append(
-                    $("<h3>").text("5-Day Forecast:").addClass("col-12 ml-3")
-                );
-                $("#future-weather").append(cardDeck);
+                // $("#future-weather").text(" ");
+                // $("#future-weather").append(
+                //     $("<h3>").text("5-Day Forecast:").addClass("col-12 ml-3")
+                // );
+                // $("#future-weather").append(cardDeck);
             }
         });
     });
@@ -203,7 +235,6 @@ $("#search-result-list").on("click", (event) => {
     // Listen to the clicked city
     if (event.target !== event.currentTarget) {
         const name = event.target.value;
-        console.log(name);
         $("#city-name").val(name);
         displayCity();
     }
