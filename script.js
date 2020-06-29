@@ -1,30 +1,25 @@
 const APIKey = "4b59a40f09c8d36a73b9057b6f2c3908";
+let cityArray = [];
 
-function addCity() {
-    const cityName = $("#city-name").val();
-    const queryURL =
-        "https://api.openweathermap.org/data/2.5/weather?q=" +
-        cityName +
-        "&appid=" +
-        APIKey;
-    $.ajax({
-        url: queryURL,
-        method: "GET",
-    }).then(function (response) {
-        // Append citys to the left panel
+function renderButtons() {
+    $("#search-result-list").empty();
+    for (let i = 0; i < cityArray.length; i++) {
+        let cityName = cityArray[i];
         $("#search-result-list").append(
             $("<button>")
-                .text(response.name)
+                .text(cityName)
                 .addClass("list-group-item list-group-item-action ml-2")
                 .attr("type", "button")
                 .attr("value", cityName)
         );
-    });
+    }
 }
 
 function displayCity() {
     const cityName = $("#city-name").val();
-    localStorage.setItem("cityName", cityName);
+    if (!cityName) {
+        return;
+    }
 
     const queryURL =
         "https://api.openweathermap.org/data/2.5/weather?q=" +
@@ -169,7 +164,9 @@ function displayCity() {
 // Remember to prevent browser default behaviour
 $("#search-button").on("click", (event) => {
     event.preventDefault();
-    addCity();
+    cityArray.push($("#city-name").val());
+    localStorage.setItem("cityArray", JSON.stringify(cityArray));
+    renderButtons();
     displayCity();
 });
 
@@ -184,9 +181,12 @@ $("#search-result-list").on("click", (event) => {
 });
 
 function getLocalstorage() {
-    const name = localStorage.getItem("cityName");
-    $("#city-name").val(name);
-    addCity();
+    const storedcities = JSON.parse(localStorage.getItem("cityArray"));
+    if (storedcities) {
+        cityArray = storedcities;
+    }
+    $("#city-name").val(cityArray[cityArray.length - 1]);
+    renderButtons();
     displayCity();
 }
 getLocalstorage();
