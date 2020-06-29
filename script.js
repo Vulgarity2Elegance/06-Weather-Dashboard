@@ -1,16 +1,9 @@
 const APIKey = "4b59a40f09c8d36a73b9057b6f2c3908";
-let cityName = $("#city-name").val();
-// Current weather data: api.openweathermap.org/data/2.5/weather?q={city name}&appid={your api key}
-let queryURL =
-    "https://api.openweathermap.org/data/2.5/weather?q=" +
-    cityName +
-    "&appid=" +
-    APIKey;
 
 function addCity() {
-    cityName = $("#city-name").val();
+    const cityName = $("#city-name").val();
     // Current weather data: api.openweathermap.org/data/2.5/weather?q={city name}&appid={your api key}
-    queryURL =
+    const queryURL =
         "https://api.openweathermap.org/data/2.5/weather?q=" +
         cityName +
         "&appid=" +
@@ -32,9 +25,9 @@ function addCity() {
 }
 
 function displayCity() {
-    cityName = $("#city-name").val();
+    const cityName = $("#city-name").val();
     // Current weather data: api.openweathermap.org/data/2.5/weather?q={city name}&appid={your api key}
-    queryURL =
+    const queryURL =
         "https://api.openweathermap.org/data/2.5/weather?q=" +
         cityName +
         "&appid=" +
@@ -47,7 +40,7 @@ function displayCity() {
         // Create essential variables for current date and weather icon
         const now = moment().format("MM/DD/YYYY");
         const weatherIcon = $(
-            "<img src = http://openweathermap.org/img/wn/" +
+            "<img src = https://openweathermap.org/img/wn/" +
                 response.weather[0].icon +
                 ".png>"
         );
@@ -88,7 +81,7 @@ function displayCity() {
         const lat = response.coord.lat;
         const lon = response.coord.lon;
         const UVIndexURL =
-            "http://api.openweathermap.org/data/2.5/uvi?&appid=" +
+            "https://api.openweathermap.org/data/2.5/uvi?&appid=" +
             APIKey +
             "&lat=" +
             lat +
@@ -152,7 +145,7 @@ function displayCity() {
 
                 // creating date and icon variables
                 cardIcon = $(
-                    "<img src = http://openweathermap.org/img/wn/" +
+                    "<img src = https://openweathermap.org/img/wn/" +
                         response.daily[i].weather[0].icon +
                         ".png>"
                 );
