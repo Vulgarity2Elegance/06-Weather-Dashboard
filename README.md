@@ -23,3 +23,11 @@ THEN I am presented with the last searched city forecast
 ## Challenges
 
 There are two obstacles that I have encountered in this assignment. The first was that I failed to implemment event bubbling on click event, and the second was that I spent hours after hours trying to get localstorage working. Nevertheless, I have gained a sense of achievement after tackling these issues by resorting to Google, YouTube, StackOverflow.
+
+### Demo
+
+The following animited gif demonstrates the application functionality:
+
+![weather dashboard demo]: (./Assets/Weather-Dashboard.gif)
+
+Please also visit the deployed page (https://vulgarity2elegance.github.io/05-WorkDay-Scheduler/) and try it yourself!
