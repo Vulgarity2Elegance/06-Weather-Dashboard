@@ -1,5 +1,6 @@
 const APIKey = "4b59a40f09c8d36a73b9057b6f2c3908";
-
+let localCurrent;
+let currentConditions;
 function addCity() {
     const cityName = $("#city-name").val();
     // Current weather data: api.openweathermap.org/data/2.5/weather?q={city name}&appid={your api key}
@@ -26,6 +27,7 @@ function addCity() {
 
 function displayCity() {
     const cityName = $("#city-name").val();
+    localStorage.setItem("cityName", cityName);
     // Current weather data: api.openweathermap.org/data/2.5/weather?q={city name}&appid={your api key}
     const queryURL =
         "https://api.openweathermap.org/data/2.5/weather?q=" +
@@ -50,32 +52,25 @@ function displayCity() {
         const cardBody = $("<div>").addClass("card-body");
         card.append(cardBody);
 
-        cardBody.append(
-            $("<h3>")
-                .text(response.name + " (" + now + ")")
-                .addClass("card-title")
-                .append(weatherIcon)
-        );
+        const title = $("<h3>")
+            .text(response.name + " (" + now + ")")
+            .addClass("card-title")
+            .append(weatherIcon);
 
         const tempF = (response.main.temp - 273.15) * 1.8 + 32;
-        cardBody.append(
-            $("<p>")
-                .text("Temperature: " + tempF.toFixed(2) + " °F")
-                .addClass("card-text")
-        );
+        const temp = $("<p>")
+            .text("Temperature: " + tempF.toFixed(2) + " °F")
+            .addClass("card-text");
 
-        cardBody.append(
-            $("<p>")
-                .text("Humidity: " + response.main.humidity + "%")
-                .addClass("card-text")
-        );
+        const humidity = $("<p>")
+            .text("Humidity: " + response.main.humidity + "%")
+            .addClass("card-text");
 
-        cardBody.append(
-            $("<p>")
-                .text("Wind Spped: " + response.wind.speed + " MPH")
-                .addClass("card-text")
-        );
+        const speed = $("<p>")
+            .text("Wind Spped: " + response.wind.speed + " MPH")
+            .addClass("card-text");
 
+        cardBody.append(title, temp, humidity, speed);
         // Rendering the UV index
         // UV data: http://api.openweathermap.org/data/2.5/uvi?appid={appid}&lat={lat}&lon={lon}
         const lat = response.coord.lat;
@@ -93,9 +88,11 @@ function displayCity() {
         }).then(function (response) {
             const value = response.value;
             const index = $("<button>").text(value);
-            cardBody.append(
-                $("<p>").text("UV Index: ").addClass("card-text").append(index)
-            );
+            const uv = $("<p>")
+                .text("UV Index: ")
+                .addClass("card-text")
+                .append(index);
+            cardBody.append(uv);
 
             // Coloring UV index value to indicate whether the conditions are favorable, moderate, or severe
             if (value < 3) {
@@ -110,10 +107,6 @@ function displayCity() {
         // Clear current city's weather conditions before displaying new city's
         $("#current-weather").text(" ");
         $("#current-weather").append(card);
-
-        // Set localstorage for current conditions
-        const current = $("#current-weather").text();
-        localStorage.setItem("currentWeather", current);
 
         // Display 5-day forcast for the searched city
         // https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude={part}&appid={YOUR API KEY}
@@ -175,10 +168,6 @@ function displayCity() {
                     $("<h3>").text("5-Day Forecast:").addClass("col-12 ml-3")
                 );
                 $("#future-weather").append(cardDeck);
-
-                // set localstorage for future conditions
-                const future = $("#future-weather").text();
-                localStorage.setItem("futureWeather", future);
             }
         });
     });
@@ -202,10 +191,9 @@ $("#search-result-list").on("click", (event) => {
 });
 
 function getLocalstorage() {
-    const currentWeather = localStorage.getItem("currentWeather");
-    $("#current-weather").text(currentWeather);
-
-    const futureWeather = localStorage.getItem("futureWeather");
-    $("#future-weather").text(futureWeather);
+    const name = localStorage.getItem("cityName");
+    $("#city-name").val(name);
+    addCity();
+    displayCity();
 }
 getLocalstorage();
