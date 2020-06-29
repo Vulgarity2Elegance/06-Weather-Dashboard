@@ -1,20 +1,17 @@
 const APIKey = "4b59a40f09c8d36a73b9057b6f2c3908";
-let localCurrent;
-let currentConditions;
+
 function addCity() {
     const cityName = $("#city-name").val();
-    // Current weather data: api.openweathermap.org/data/2.5/weather?q={city name}&appid={your api key}
     const queryURL =
         "https://api.openweathermap.org/data/2.5/weather?q=" +
         cityName +
         "&appid=" +
         APIKey;
-
     $.ajax({
         url: queryURL,
         method: "GET",
     }).then(function (response) {
-        // Display citys to the left panel
+        // Append citys to the left panel
         $("#search-result-list").append(
             $("<button>")
                 .text(response.name)
@@ -28,7 +25,7 @@ function addCity() {
 function displayCity() {
     const cityName = $("#city-name").val();
     localStorage.setItem("cityName", cityName);
-    // Current weather data: api.openweathermap.org/data/2.5/weather?q={city name}&appid={your api key}
+
     const queryURL =
         "https://api.openweathermap.org/data/2.5/weather?q=" +
         cityName +
@@ -51,28 +48,22 @@ function displayCity() {
         const card = $("<div>").addClass("card mx-3 mb-2");
         const cardBody = $("<div>").addClass("card-body");
         card.append(cardBody);
-
         const title = $("<h3>")
             .text(response.name + " (" + now + ")")
             .addClass("card-title")
             .append(weatherIcon);
-
         const tempF = (response.main.temp - 273.15) * 1.8 + 32;
         const temp = $("<p>")
             .text("Temperature: " + tempF.toFixed(2) + " °F")
             .addClass("card-text");
-
         const humidity = $("<p>")
             .text("Humidity: " + response.main.humidity + "%")
             .addClass("card-text");
-
         const speed = $("<p>")
             .text("Wind Spped: " + response.wind.speed + " MPH")
             .addClass("card-text");
 
-        cardBody.append(title, temp, humidity, speed);
         // Rendering the UV index
-        // UV data: http://api.openweathermap.org/data/2.5/uvi?appid={appid}&lat={lat}&lon={lon}
         const lat = response.coord.lat;
         const lon = response.coord.lon;
         const UVIndexURL =
@@ -82,6 +73,7 @@ function displayCity() {
             lat +
             "&lon=" +
             lon;
+
         $.ajax({
             url: UVIndexURL,
             method: "GET",
@@ -92,7 +84,7 @@ function displayCity() {
                 .text("UV Index: ")
                 .addClass("card-text")
                 .append(index);
-            cardBody.append(uv);
+            cardBody.append(title, temp, humidity, speed, uv);
 
             // Coloring UV index value to indicate whether the conditions are favorable, moderate, or severe
             if (value < 3) {
@@ -109,7 +101,6 @@ function displayCity() {
         $("#current-weather").append(card);
 
         // Display 5-day forcast for the searched city
-        // https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude={part}&appid={YOUR API KEY}
         const forcastURL =
             "https://api.openweathermap.org/data/2.5/onecall?lat=" +
             lat +
@@ -128,6 +119,7 @@ function displayCity() {
             let cardIcon;
             let date;
             let temp;
+
             for (let i = 1; i < 6; i++) {
                 card = $("<div>")
                     .addClass("card col-2")
@@ -137,12 +129,13 @@ function displayCity() {
                 cardDeck.append(card);
 
                 // creating date and icon variables
+                date = new Date(1000 * response.daily[i].dt);
                 cardIcon = $(
                     "<img src = https://openweathermap.org/img/wn/" +
                         response.daily[i].weather[0].icon +
                         ".png>"
                 );
-                date = new Date(1000 * response.daily[i].dt);
+
                 cardBody.append(
                     $("<h5>")
                         .text(date.toGMTString())
@@ -174,8 +167,8 @@ function displayCity() {
 }
 
 // Remember to prevent browser default behaviour
-$("#search-button").on("click", function (e) {
-    e.preventDefault();
+$("#search-button").on("click", (event) => {
+    event.preventDefault();
     addCity();
     displayCity();
 });
