@@ -28,6 +28,6 @@ There are two obstacles that I have encountered in this assignment. The first wa
 
 The following animited gif demonstrates the application functionality:
 
-![weather dashboard demo]: (Assets/Weather-Dashboard.gif)
+![Weather Dashboard demo](./Assets/Weather-Dashboard.gif)
 
 Please also visit the deployed page (https://vulgarity2elegance.github.io/06-Weather-Dashboard/) and try it yourself!
